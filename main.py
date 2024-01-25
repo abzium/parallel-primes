@@ -18,15 +18,15 @@ def is_prime(n):
         
     return True
 
-start_time = time.time()
-n = 1000000
-sum = 0
-primes_found = 0
-for i in range(2, n):
-    if is_prime(i):
-        sum += i
-        primes_found += 1
-        
+def sum_primes(start, end):
+    start_time = time.time()
+    sum = 0
+    primes_found = 0
+    for i in range(start, end + 1):
+        if is_prime(i):
+            sum += i
+            primes_found += 1
+    print(f"{time.time() - start_time} {primes_found} {sum}")
 
-print(f"{time.time() - start_time} {primes_found} {sum}")
-print(is_prime(4))
+n = 1000000
+sum_primes(0, n)
