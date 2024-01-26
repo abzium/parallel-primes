@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class sumPrimes {
     public static void main(String[] args) throws Exception {
         long startTime = System.currentTimeMillis();
@@ -24,8 +28,26 @@ public class sumPrimes {
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
 
-        System.out.println(duration + "ms " + primesFound + " " + sum);
+        String result = duration + "ms " + primesFound + " " + sum;
+        writeToFile(result);
 
+    }
+
+    public static void writeToFile(String text) {
+        File file = new File("output.txt");
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file);
+            writer.write(text);
+        } catch (IOException e) {
+            System.err.println("An error occurred when writing to file!");
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 
