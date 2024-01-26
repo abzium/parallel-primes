@@ -1,44 +1,76 @@
-import java.lang.Math;
-import java.util.Arrays;
+public class sumPrimes {
+    public static void main(String[] args) throws Exception {
+        long startTime = System.currentTimeMillis();
 
-class sumPrimes {
-    public static void main(String[] args) {
-        long startTime = System.nanoTime();
-        int n = 100000000;
+        int threadCount = 8;
+        long n = 100000000;
+        long nPart = n / threadCount;
+
+        sumPrimesThread[] threads = new sumPrimesThread[threadCount];
+        for (int i = 0; i < threadCount; i++) {
+            threads[i] = new sumPrimesThread(nPart * i, nPart * (i + 1));
+            threads[i].start();
+        }
+
         long sum = 0;
-        int primesFound = 0;
+        long primesFound = 0;
 
-        boolean[] primesList = new boolean[n + 1];
-        Arrays.fill(primesList, true);
-        primesList[0] = false;
-        primesList[1] = false;
-
-        int limit = ((int) Math.sqrt(n)) + 1;
-        for (int i = 2; i <= limit; i++) {
-
-            if (primesList[i]) {
-                for (int j = 0; j < n; j++) {
-
-                    int index = (int) Math.pow(i, 2) + (j * i);
-                    if (index >= n) {
-                        break;
-                    }
-                    primesList[index] = false;
-
-                }
-            }
+        for (int i = 0; i < threadCount; i++) {
+            threads[i].join();
+            sum += threads[i].getSum();
+            primesFound += threads[i].getPrimesFound();
         }
 
-        for (int i = 0; i < n; i++) {
-            if (primesList[i]) {
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
 
-                sum += i;
-                primesFound += 1;
-            }
-        }
-
-        long endTime = System.nanoTime();
-        double duration = (endTime - startTime) / 1000000;
         System.out.println(duration + "ms " + primesFound + " " + sum);
+
     }
-};
+}
+
+class sumPrimesThread extends Thread {
+    private long start, end, sum, primesFound;
+
+    public sumPrimesThread(long start, long end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    @Override
+    public void run() {
+        this.sum = 0;
+        this.primesFound = 0;
+        for (long i = this.start; i < this.end + 1; i++) {
+            if (isPrime(i)) {
+                this.sum += i;
+                this.primesFound += 1;
+            }
+        }
+    }
+
+    boolean isPrime(long n) {
+        if (n <= 1)
+            return false;
+        if (n == 2)
+            return true;
+        if (n % 2 == 0)
+            return false;
+
+        int limit = (int) Math.sqrt(n) + 1;
+        for (int i = 3; i < limit; i += 2) {
+            if (n % i == 0)
+                return false;
+        }
+
+        return true;
+    }
+
+    long getSum() {
+        return this.sum;
+    }
+
+    long getPrimesFound() {
+        return this.primesFound;
+    }
+}
