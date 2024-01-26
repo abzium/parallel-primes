@@ -24,11 +24,13 @@ public class sumPrimes {
             sum += threads[i].getSum();
             primesFound += threads[i].getPrimesFound();
         }
+        // get top 10 primes
+        String topTen = threads[threadCount - 1].getTopTen();
 
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
 
-        String result = duration + "ms " + primesFound + " " + sum;
+        String result = duration + "ms " + primesFound + " " + sum + "\n" + topTen;
         writeToFile(result);
 
     }
@@ -53,6 +55,7 @@ public class sumPrimes {
 
 class sumPrimesThread extends Thread {
     private long start, end, sum, primesFound;
+    private long[] topTen; // 10 largest primes
 
     public sumPrimesThread(long start, long end) {
         this.start = start;
@@ -63,10 +66,15 @@ class sumPrimesThread extends Thread {
     public void run() {
         this.sum = 0;
         this.primesFound = 0;
-        for (long i = this.start; i < this.end + 1; i++) {
+        this.topTen = new long[10];
+        for (long i = this.end + 1; i > this.start; i--) {
             if (isPrime(i)) {
                 this.sum += i;
+                if (primesFound < 10) {
+                    topTen[(int) primesFound] = i;
+                }
                 this.primesFound += 1;
+
             }
         }
     }
@@ -94,5 +102,13 @@ class sumPrimesThread extends Thread {
 
     long getPrimesFound() {
         return this.primesFound;
+    }
+
+    String getTopTen() {
+        String s = "";
+        for (int i = 0; i < 10; i++) {
+            s += topTen[i] + "\n";
+        }
+        return s;
     }
 }
