@@ -107,7 +107,7 @@ class sumPrimesThread extends Thread {
     String getTopTen() {
         String s = "";
         for (int i = 0; i < 10; i++) {
-            s += topTen[i] + "\n";
+            s += topTen[9 - i] + "\n";
         }
         return s;
     }
